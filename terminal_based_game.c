@@ -22,7 +22,7 @@ struct player{
 };
 struct player p_main = {100,10};
 //struct player p_main.power = 10;
-/*
+
 //monsters
 void mons(int health,int power){
 
@@ -34,25 +34,14 @@ void player(){
     //powerpotion - 1, healing potion - 2, key- 3, lock -4, sword- 5, vest - 6, helmet -7 
 
 }
-*/
-//map
-/*
-void map(){
-    char dir1;
-    // char dir2,*collection;
-    printf("Oh so you are back again \nYour goal is to clear the dungeon by defeating the final boss but u don't know where the bosses are..\nNow in which direction u want to go first N,E,W or S.\n Enter here: ");
-    scanf("%c",&dir1);
-    trash();
-    
-    if(dir1=='N'||dir1=='n'||dir1=='W'||dir1=='w'||dir1=='E'||dir1=='e'||dir1=='S'||dir1=='s'){
-        if(dir1=='N'||dir1=='n'){north_map();} 
-        else if(dir1=='W'||dir1=='w'){west_map();}
-        else if(dir1=='E'||dir1=='e'){east_map();}
-        else{south_map();}
-    }
-    else{printf("Please try again with valid character....\nOh so u made a mistake no problem everyone makes...\n Now let's restart again...\n..\n..\n..\n..\n..\n");map();}
 
-}*/
+//map
+
+void north_map();
+void south_map();
+void east_map();
+void west_map();
+void map();
 
 void north_map(){
     char dir2;
@@ -138,7 +127,7 @@ void north_map(){
         else if(dir2=='3'){
             printf("You can't open this door as it is locked and you don't have the key to open it...\n Now u will be sent back to the entry...\n Be careful next time...\n\n");north_map();
         }
-        else if(dir2=='4'){printf("You have been sent back to the entry...\n Be careful next time...\n\n");north_map();}
+        else if(dir2=='4'){printf("You have been sent back to the entry...\n Be careful next time...\n\n");map();}
         else{printf("You have exited the game...\n");exit(0);}
         
 
@@ -232,7 +221,7 @@ void east_map(){
         else if(dir2=='3'){
             printf("You can't open this door as it is locked and you don't have the key to open it...\n Now u will be sent back to the entry...\n Be careful next time...\n\n");east_map();
         }
-        else if(dir2=='4'){printf("You have been sent back to the entry...\n Be careful next time...\n\n");east_map();}
+        else if(dir2=='4'){printf("You have been sent back to the entry...\n Be careful next time...\n\n");map();}
         else{printf("You have exited the game...\n");exit(0);}
         
 
@@ -326,7 +315,7 @@ void west_map(){
         else if(dir2=='3'){
             printf("You can't open this door as it is locked and you don't have the key to open it...\n Now u will be sent back to the entry...\n Be careful next time...\n\n");west_map();
         }
-        else if(dir2=='4'){printf("You have been sent back to the entry...\n Be careful next time...\n\n");west_map();}
+        else if(dir2=='4'){printf("You have been sent back to the entry...\n Be careful next time...\n\n");map();}
         else{printf("You have exited the game...\n");exit(0);}
         
 
@@ -420,7 +409,7 @@ void south_map(){
         else if(dir2=='3'){
             printf("You can't open this door as it is locked and you don't have the key to open it...\n Now u will be sent back to the entry...\n Be careful next time...\n\n");south_map();
         }
-        else if(dir2=='4'){printf("You have been sent back to the entry...\n Be careful next time...\n\n");south_map();}
+        else if(dir2=='4'){printf("You have been sent back to the entry...\n Be careful next time...\n\n");map();}
         else{printf("You have exited the game...\n");exit(0);}
         
 
@@ -463,4 +452,6 @@ int main(){
 
     }
 }
+
+
 
