@@ -23,6 +23,8 @@ typedef struct{
     items inventory[5];
 }player;
 
+player p = {100,10};
+
 typedef struct{
     char *room_num;
     items item[2];
@@ -44,3 +46,122 @@ void trash(){
     while((trash = getchar()) != '\n' && trash != EOF);
 }
 
+void data(){
+    dir North = {
+        .dir = "North",
+        .rooms = {
+            {
+                .room_num = "North Room 1",
+                .item = {
+                    {"Sword fragment", "A sharp blade that increases your attack power.", 5},
+                    {"Health Potion", "Restores 20 health points.", 20}
+                },
+                .monster = false
+            },
+            {
+                .room_num = "North Room 2",
+                .item = {},                    
+                .monster = true
+            },
+            {
+                .room_num = "North Room 3",
+                .item = {
+                    {"Sword fragment", "A sharp blade that increases your attack power.", 5},
+                    {"Stamina Potion", "Restores 20 stamina points.", 20}
+                },
+                .monster = false
+            }
+        }
+    };
+    dir South = {
+        .dir = "South",
+        .rooms = {
+            {
+                .room_num = "South Room 1",
+                .item = {
+                    {"Shield fragment", "A sturdy piece of armor that increases your defense.", 5},
+                    {"Health Potion", "Restores 20 health points.", 20}
+                },
+                .monster = false
+            },
+            {
+                .room_num = "South Room 2",
+                .item = {0},
+                .monster = true
+            },
+            {
+                .room_num = "South Room 3",
+                .item = {
+                    {"Shield fragment", "A sturdy piece of armor that increases your defense.", 5},
+                    {"Health Potion", "Restores 20 health points.", 20}
+                },
+                .monster = false
+            }
+        }
+    };
+    dir East = {
+        .dir = "East",
+        .rooms = {
+            {
+                .room_num = "East Room 1",
+                .item = {
+                    {"Sword fragment", "A sharp blade that increases your attack power.", 5},
+                    {0}
+                },
+                .monster = false
+            },
+            {
+                .room_num = "East Room 2",
+                .item = {0},
+                .monster = true
+            },
+            {
+                .room_num = "East Room 3",
+                .item = {
+                    {"Key", "A key that opens a locked door.", 0},
+                    {"Health Potion", "Restores 20 health points.", 20}
+                },
+                .monster = false
+            }
+        }
+    };
+    dir West = {
+        .dir = "West",
+        .rooms = {
+            {
+                .room_num = "West Room 1",
+                .item = {
+                    {"Sword fragment", "A sharp blade that increases your attack power.", 5},
+                    {0}
+                },
+                .monster = false
+            },
+            {
+                .room_num = "West Room 2",
+                .item = {0},
+                .monster = true
+            },
+            {
+                .room_num = "West Room 3",
+                .item = {
+                    {"Buff potion", "A potion that decreases enemy power.", 5},
+                    {"Health Potion", "Restores 20 health points.", 20}
+                },
+                .monster = false
+            }
+        }
+    };
+
+}
+
+void monster_data(){
+    monster m1 = {100, 50};
+    monster m2 = {150, 70};
+    monster m3 = {200, 100};
+    monster m4 = {250, 150};
+    monster final_boss = {500, 200};
+}
+
+int main(){
+
+}
