@@ -20,7 +20,7 @@ typedef struct{
 typedef struct{
     int health;
     int power;
-    items inventory[5];
+    // items inventory[5];
 }player;
 
 player p = {100,10};
@@ -46,8 +46,17 @@ void trash(){
     while((trash = getchar()) != '\n' && trash != EOF);
 }
 
+typedef struct {
+    char *dir;
+    room rooms[3]; // 3 rooms deep in each direction
+} Direction;
+
+Direction direction[4];
+
+
+
 void data(){
-    dir North = {
+    direction[0] = (Direction){
         .dir = "North",
         .rooms = {
             {
@@ -73,7 +82,7 @@ void data(){
             }
         }
     };
-    dir South = {
+    direction[1] = (Direction){
         .dir = "South",
         .rooms = {
             {
@@ -99,7 +108,7 @@ void data(){
             }
         }
     };
-    dir East = {
+    direction[2] = (Direction){
         .dir = "East",
         .rooms = {
             {
@@ -125,7 +134,7 @@ void data(){
             }
         }
     };
-    dir West = {
+    direction[3] = (Direction){
         .dir = "West",
         .rooms = {
             {
@@ -163,5 +172,7 @@ void monster_data(){
 }
 
 int main(){
-
+    data();
+    monster_data();
+    return 0;
 }
