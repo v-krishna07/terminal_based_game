@@ -30,6 +30,18 @@ player p = {
     }
 };
 
+typedef struct{
+    int health;
+    int power;
+}monster;
+
+monster m1={.health = 200,.power=30};
+monster m2={.health = 300,.power=40};
+monster m3={.health = 300,.power=50};
+monster m4={.health = 400,.power=70};
+monster m_main={.health = 500, .power=100};
+
+
 typedef struct {
     int room_num;
     char *room_name;
@@ -170,7 +182,7 @@ void data() {
 void direction_conditioning();
 void room_conditioning(int dir_no);
 void item_selection(int dir_no, int room_no);
-
+void monster_defense(monster m);
 void direction_conditioning() {
     int dir_no;
     while(1) {
@@ -211,7 +223,7 @@ void room_conditioning(int dir_no) {
         } 
         else if (room_no == 3) {
             if (has_key()) {
-                printf(GREEN "You unlocked the Boss door with your key! The ultimate challenge begins..." RESET "\n");
+                printf(GREEN "You unlocked the Boss door with your key! The ultimate challenge begins..." RESET "\n");monster_defense(m1);
             } else {
                 printf(RED "The door is sealed shut! You need to find a 'Key' from the other rooms first.\n" RESET);
             }
@@ -307,6 +319,26 @@ void item_selection(int dir_no, int room_no) {
         }
     }
 }
+
+void monster_defense(monster m){
+    printf(RED "Here is the first monster you gonna face" RESET);
+    printf("The front monster has health - %d, power - %d",m.health,m.power);
+    int initial_h = p.health;
+    int initial_p = p.power;
+    while(p.health>0 || m.health>0){
+        p.health = p.health-m.power;
+        m.health = m.health-p.power;
+        if(p.health!=0 && m.health==0){
+            printf(GREEN"You have defeated the monster as a reward...."RESET);
+            printf(BLUE"You recieved health +50, power +20,you health and power has been restored, and a door to go to another monster....\n"RESET);
+        }else{printf("You are defeated try again....\n");direction_conditioning();}
+        p.health = initial_h+50;
+        p.power = initial_p+20;
+    }
+}
+
+
+
 
 int main() {
     data();
