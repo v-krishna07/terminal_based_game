@@ -21,7 +21,6 @@ typedef struct {
     items inventory[5];
 } player;
 
-// Initialize players with explicitly cleared item slots
 player p = {
     .health = 100, 
     .power = 10, 
@@ -30,17 +29,16 @@ player p = {
     }
 };
 
-typedef struct{
+typedef struct {
     int health;
     int power;
-}monster;
+} monster;
 
-monster m1={.health = 200,.power=30};
-monster m2={.health = 300,.power=40};
-monster m3={.health = 300,.power=50};
-monster m4={.health = 400,.power=70};
-monster m_main={.health = 500, .power=100};
-
+monster m1 = {.health = 200, .power = 15};
+monster m2 = {.health = 300, .power = 20};
+monster m3 = {.health = 300, .power = 25};
+monster m4 = {.health = 400, .power = 35};
+monster m_main = {.health = 500, .power = 50};
 
 typedef struct {
     int room_num;
@@ -55,13 +53,13 @@ typedef struct {
 } Direction;
 
 Direction direction[4];
+int bosses_defeated = 0;
 
 void trash() {
     char trash;
     while ((trash = getchar()) != '\n' && trash != EOF);
 }
 
-// Global inventory check to look for a "Key"
 bool has_key() {
     for (int i = 0; i < 5; i++) {
         if (p.inventory[i].name != NULL && strcmp(p.inventory[i].name, "Key") == 0) {
@@ -71,118 +69,77 @@ bool has_key() {
     return false;
 }
 
+void use_item(items *item) {
+    if (item->name == NULL || strcmp(item->name, "None") == 0) {
+        printf(RED "\nThere is no item in this slot to use!\n" RESET);
+        return;
+    }
+
+    printf("\n--- Using Item: %s ---\n", item->name);
+
+    if (strcmp(item->name, "Health Potion") == 0 || strcmp(item->name, "Stamina Potion") == 0) {
+        p.health += item->ability;
+        printf(GREEN "Success! You consumed %s.\n" RESET, item->name);
+        printf(YELLOW "Health boosted by +%d! (Current Health: %d)\n" RESET, item->ability, p.health);
+        *item = (items){"None", "", 0};
+    } 
+    else if (strcmp(item->name, "Sword fragment") == 0 || strcmp(item->name, "Buff potion") == 0) {
+        p.power += item->ability;
+        printf(GREEN "Success! You equipped/consumed %s.\n" RESET, item->name);
+        printf(YELLOW "Power boosted by +%d! (Current Power: %d)\n" RESET, item->ability, p.power);
+        *item = (items){"None", "", 0};
+    }
+    else if (strcmp(item->name, "Shield fragment") == 0) {
+        p.health += item->ability;
+        printf(GREEN "Success! You equipped %s.\n" RESET, item->name);
+        printf(YELLOW "Defense/Health boosted by +%d! (Current Health: %d)\n" RESET, item->ability, p.health);
+        *item = (items){"None", "", 0};
+    }
+    else if (strcmp(item->name, "Key") == 0) {
+        printf(BLUE "This is a Key! You cannot consume it. Keep it in your inventory to unlock Boss Rooms.\n" RESET);
+    }
+}
+
 void data() {
     direction[0] = (Direction){
         .dir = "North",
         .rooms = {
-            {
-                .room_num = 1, .room_name = "North Room 1",
-                .item = {
-                    {"Sword fragment", "A sharp blade that increases your attack power.", 5},
-                    {"Health Potion", "Restores 20 health points.", 20}
-                },
-                .monster = false
-            },
-            {
-                .room_num = 2, .room_name = "North Room 2",
-                .item = {
-                    {"Sword fragment", "A sharp blade that increases your attack power.", 5},
-                    {"Stamina Potion", "Restores 20 stamina points.", 20}
-                },
-                .monster = false
-            },
-            {
-                .room_num = 3, .room_name = "North Room 3",
-                .item = {{"None", "", 0}, {"None", "", 0}},
-                .monster = true
-            }
+            {1, "North Room 1", {{"Sword fragment", "Increases attack power.", 5}, {"Health Potion", "Restores 20 HP.", 20}}, false},
+            {2, "North Room 2", {{"Sword fragment", "Increases attack power.", 5}, {"Stamina Potion", "Restores 20 SP.", 20}}, false},
+            {3, "North Boss Room", {{"None", "", 0}, {"None", "", 0}}, true}
         }
     };
     direction[1] = (Direction){
         .dir = "South",
         .rooms = {
-            {
-                .room_num = 1, .room_name = "South Room 1",
-                .item = {
-                    {"Shield fragment", "A sturdy piece of armor that increases your defense.", 5},
-                    {"Health Potion", "Restores 20 health points.", 20}
-                },
-                .monster = false
-            },
-            {
-                .room_num = 2, .room_name = "South Room 2",
-                .item = {
-                    {"Shield fragment", "A sturdy piece of armor that increases your defense.", 5},
-                    {"Health Potion", "Restores 20 health points.", 20}
-                },
-                .monster = false
-            },
-            {
-                .room_num = 3, .room_name = "South Room 3",
-                .item = {{"None", "", 0}, {"None", "", 0}},
-                .monster = true
-            }
+            {1, "South Room 1", {{"Shield fragment", "Increases defense.", 5}, {"Health Potion", "Restores 20 HP.", 20}}, false},
+            {2, "South Room 2", {{"Shield fragment", "Increases defense.", 5}, {"Health Potion", "Restores 20 HP.", 20}}, false},
+            {3, "South Boss Room", {{"None", "", 0}, {"None", "", 0}}, true}
         }
     };
     direction[2] = (Direction){
         .dir = "East",
         .rooms = {
-            {
-                .room_num = 1, .room_name = "East Room 1",
-                .item = {
-                    {"Sword fragment", "A sharp blade that increases your attack power.", 5},
-                    {"None", "", 0}
-                },
-                .monster = false
-            },
-            {
-                .room_num = 2, .room_name = "East Room 2",
-                .item = {
-                    {"Key", "A key that opens a locked door.", 0},
-                    {"Health Potion", "Restores 20 health points.", 20}
-                },
-                .monster = false
-            },
-            {
-                .room_num = 3, .room_name = "East Room 3",
-                .item = {{"None", "", 0}, {"None", "", 0}},
-                .monster = true
-            }
+            {1, "East Room 1", {{"Sword fragment", "Increases attack power.", 5}, {"None", "", 0}}, false},
+            {2, "East Room 2", {{"Key", "Opens a locked boss door.", 0}, {"Health Potion", "Restores 20 HP.", 20}}, false},
+            {3, "East Boss Room", {{"None", "", 0}, {"None", "", 0}}, true}
         }
     };
     direction[3] = (Direction){
         .dir = "West",
         .rooms = {
-            {
-                .room_num = 1, .room_name = "West Room 1",
-                .item = {
-                    {"Sword fragment", "A sharp blade that increases your attack power.", 5},
-                    {"None", "", 0}
-                },
-                .monster = false
-            },
-            {
-                .room_num = 2, .room_name = "West Room 2",
-                .item = {
-                    {"Buff potion", "A potion that decreases enemy power.", 5},
-                    {"Health Potion", "Restores 20 health points.", 20}
-                },
-                .monster = false
-            },
-            {
-                .room_num = 3, .room_name = "West Room 3",
-                .item = {{"None", "", 0}, {"None", "", 0}},
-                .monster = true
-            }
+            {1, "West Room 1", {{"Sword fragment", "Increases attack power.", 5}, {"None", "", 0}}, false},
+            {2, "West Room 2", {{"Buff potion", "Decreases enemy power.", 5}, {"Health Potion", "Restores 20 HP.", 20}}, false},
+            {3, "West Boss Room", {{"None", "", 0}, {"None", "", 0}}, true}
         }
     };
 }
 
-// Forward declarations using dynamic returns to keep tracking variables safe
 void direction_conditioning();
 void room_conditioning(int dir_no);
 void item_selection(int dir_no, int room_no);
 void monster_defense(monster m);
+
 void direction_conditioning() {
     int dir_no;
     while(1) {
@@ -215,7 +172,7 @@ void room_conditioning(int dir_no) {
         
         if (room_no == 4) {
             printf("Going back to the main hub...\n");
-            return; // Breaks the loop and drops cleanly back into direction_conditioning()
+            return; 
         } 
         else if (room_no == 1 || room_no == 2) {
             printf("\nNow u are in " BLUE "%s" RESET "\n", direction[dir_no-1].rooms[room_no-1].room_name);
@@ -223,7 +180,21 @@ void room_conditioning(int dir_no) {
         } 
         else if (room_no == 3) {
             if (has_key()) {
-                printf(GREEN "You unlocked the Boss door with your key! The ultimate challenge begins..." RESET "\n");monster_defense(m1);
+                printf(GREEN "You unlocked the Boss door with your key! The battle begins..." RESET "\n");
+                if (dir_no == 1) monster_defense(m1);
+                else if (dir_no == 2) monster_defense(m2);
+                else if (dir_no == 3) monster_defense(m3);
+                else if (dir_no == 4) monster_defense(m4);
+                direction[dir_no-1].rooms[room_no-1].monster = false;
+
+                // ---- ADD THE WIN CHECK HERE ----
+                if (bosses_defeated == 4) {
+                    printf(YELLOW "\n🏆🏆🏆 CONGRATULATIONS! 🏆🏆🏆\n" RESET);
+                    printf(GREEN "You have conquered all 4 legendary monsters and cleared the dungeon!\n" RESET);
+                    printf(BLUE "You are the ultimate champion. Thank you for playing!\n\n" RESET);
+                    exit(0);
+                }
+                // --------------------------------
             } else {
                 printf(RED "The door is sealed shut! You need to find a 'Key' from the other rooms first.\n" RESET);
             }
@@ -244,103 +215,104 @@ void item_selection(int dir_no, int room_no) {
 
     while(1) {
         printf("\nNow as you move in this room you see 2 items:\n");
-        
-        // Item 1 Guard Check
-        if (current_room->item[0].name != NULL && strcmp(current_room->item[0].name, "None") != 0 && strcmp(current_room->item[0].name, "") != 0) {
+        if (current_room->item[0].name != NULL && strcmp(current_room->item[0].name, "None") != 0) {
             printf("1. %s (%s)\n", current_room->item[0].name, current_room->item[0].usage);
-        } else {
-            printf("1. [Empty pedestal]\n");
-        }
+        } else { printf("1. [Empty pedestal]\n"); }
         
-        // Item 2 Guard Check
-        if (current_room->item[1].name != NULL && strcmp(current_room->item[1].name, "None") != 0 && strcmp(current_room->item[1].name, "") != 0) {
+        if (current_room->item[1].name != NULL && strcmp(current_room->item[1].name, "None") != 0) {
             printf("2. %s (%s)\n", current_room->item[1].name, current_room->item[1].usage);
-        } else {
-            printf("2. [Empty pedestal]\n");
-        }
+        } else { printf("2. [Empty pedestal]\n"); }
 
-        printf("\nSo which item will you select? Press 1 for 1st item \nPress 2 for 2nd item\nPress 3 to get back\nPress 4 to Quit\nPlease Type: ");
+        printf("\nPress 1 for 1st item\nPress 2 for 2nd item\nPress 3 to get back\nPress 4 to Quit\nPlease Type: ");
         if (scanf(" %d", &item_no) != 1) { trash(); continue; }
         trash();
 
-        if (item_no == 4) {
-            printf("You will be exiting from the game...\n");
-            exit(0);
-        } 
-        else if (item_no == 3) {
-            printf("Stepping out of the room...\n");
-            return; // Cleanly returns to the room choices
-        } 
+        if (item_no == 4) exit(0);
+        else if (item_no == 3) return;
         else if (item_no == 1 || item_no == 2) {
             items *selected_item = &current_room->item[item_no - 1];
 
-            // Verify the selected item actually exists
-            if (selected_item->name != NULL && strcmp(selected_item->name, "None") != 0 && strcmp(selected_item->name, "") != 0) {
-                printf(GREEN "\n%s will be added to your inventory!\n" RESET, selected_item->name);
+            if (selected_item->name != NULL && strcmp(selected_item->name, "None") != 0) {
+                printf(GREEN "\n%s added to your inventory!\n" RESET, selected_item->name);
                 
-                int i = 0;
                 bool added = false;
-                while(i < 5) {
+                for (int i = 0; i < 5; i++) {
                     if (strcmp(p.inventory[i].name, "None") == 0) {
-                        p.inventory[i] = *selected_item; // Safe complete structure assignment
+                        p.inventory[i] = *selected_item;
+                        *selected_item = (items){"None", "", 0}; 
                         added = true;
 
-                        printf("Item successfully added to inventory slot %d!\n", i + 1);
-                        printf("To check inventory Press 1\nTo keep moving Press any other key: ");
+                        printf("Item added to inventory slot %d!\n", i + 1);
+                        printf("To check/use inventory Press 1\nTo keep moving Press any other key: ");
                         char inv_choice;
                         scanf(" %c", &inv_choice);
                         trash();
 
                         if (inv_choice == '1') {
-                            printf("\nItems in your inventory are: [ ");
-                            for (int a = 0; a < 5; a++) {
-                                printf("%s | ", p.inventory[a].name);
+                            while(1) {
+                                printf("\n=== CURRENT INVENTORY ===");
+                                for (int a = 0; a < 5; a++) {
+                                    printf("\nSlot %d: %s", a + 1, p.inventory[a].name);
+                                }
+                                printf("\n=========================");
+                                printf("\nYour Stats -> Health: %d | Power: %d", p.health, p.power);
+                                printf("\n\nEnter a slot number (1-5) to USE/EQUIP an item, or 0 to go back: ");
+                                
+                                int slot_choice;
+                                if (scanf(" %d", &slot_choice) != 1) { trash(); continue; }
+                                trash();
+
+                                if (slot_choice == 0) break;
+                                else if (slot_choice >= 1 && slot_choice <= 5) {
+                                    use_item(&p.inventory[slot_choice - 1]);
+                                } else {
+                                    printf(RED "Invalid slot selection!\n" RESET);
+                                }
                             }
-                            printf("]\n");
                         }
                         break;
                     }
-                    i++;
                 }
-
-                if (!added) {
-                    printf(RED "Your inventory is completely full!\n" RESET);
-                } else {
-                    // Erase the item from the map world memory only after successful pickup
-                    *selected_item = (items){"None", "", 0};
-                }
-            } 
-            else {
-                printf(RED "Sorry, this item was already picked up or is not here!\n" RESET);
-            }
-        } 
-        else {
-            printf("Please type a valid option.\n");
+                if (!added) printf(RED "Your inventory is completely full!\n" RESET);
+            } else { printf(RED "Nothing here to pick up!\n" RESET); }
         }
     }
 }
 
-void monster_defense(monster m){
-    printf(RED "Here is the first monster you gonna face" RESET);
-    printf("The front monster has health - %d, power - %d",m.health,m.power);
+void monster_defense(monster m) {
+    printf(RED "\n⚔️ A dangerous monster blocks your path! ⚔️\n" RESET);
+    printf("Monster Stats -> Health: %d | Power: %d\n", m.health, m.power);
+    printf("Your Stats    -> Health: %d | Power: %d\n\n", p.health, p.power);
+    
     int initial_h = p.health;
     int initial_p = p.power;
-    while(p.health>0 || m.health>0){
-        p.health = p.health-m.power;
-        m.health = m.health-p.power;
-        if(p.health!=0 && m.health==0){
-            printf(GREEN"You have defeated the monster as a reward...."RESET);
-            printf(BLUE"You recieved health +50, power +20,you health and power has been restored, and a door to go to another monster....\n"RESET);
-        }else{printf("You are defeated try again....\n");direction_conditioning();}
-        p.health = initial_h+50;
-        p.power = initial_p+20;
+
+    while (p.health > 0 && m.health > 0) {
+        printf("You strike the monster for %d damage!\n", p.power);
+        m.health -= p.power;
+
+        if (m.health <= 0) break; 
+
+        printf("The monster counters and hits you for %d damage!\n", m.power);
+        p.health -= m.power;
+    }
+
+    if (p.health > 0) {
+        printf(GREEN "\n🎉 You have defeated the monster! 🎉\n" RESET);
+        printf(BLUE "Reward: Your health and power are restored, plus you gain +50 Max HP and +20 Power!\n" RESET);
+        
+        p.health = initial_h + 50;
+        p.power = initial_p + 20;
+        bosses_defeated++;
+    } 
+    else {
+        printf(RED "\n💀 You were defeated... Game Over! 💀\n" RESET);
+        exit(0); 
     }
 }
 
-
-
-
 int main() {
+    
     data();
     printf("--- Now you are in the dungeon ---\n");
     direction_conditioning(); 
