@@ -205,7 +205,7 @@ void room_conditioning(int dir_no,int room_no){
         else if(room_no<=3){
             printf("Now u are in %s \n",direction[dir_no-1].rooms[room_no-1].room_name);
         }
-        else if(room_no==5){printf("You will be exiting from the game...\n");break;exit(0);}
+        else if(room_no==5){printf("You will be exiting from the game...\n");exit(0);}
         else{printf("Please enter a valid number...\n");continue;}
     }
 
